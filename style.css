@@ -1,0 +1,105 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e8f5e9;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-width: 600px;
+    width: 100%;
+}
+h1 {
+    color: #2e7d32;
+    text-align: center;
+}
+select, button, .manual-adjust {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #2e7d32;
+    border-radius: 5px;
+    background-color: white;
+}
+button, .manual-adjust {
+    background-color: #2e7d32;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+button:hover, .manual-adjust:hover {
+    background-color: #1b5e20;
+}
+.status {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #c8e6c9;
+    border-radius: 5px;
+}
+.alerts {
+    margin-top: 10px;
+    color: #d32f2f;
+    font-weight: bold;
+}
+.camera-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.camera-button {
+    width: 48%;
+    padding: 10px;
+    border: 1px solid #2e7d32;
+    border-radius: 5px;
+    background-color: white;
+    color: #2e7d32;
+    text-align: center;
+    cursor: not-allowed;
+}
+.camera-button:hover {
+    background-color: #f1f8e9;
+}
+.adjust-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+.adjust-button {
+    width: 48%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #2e7d32;
+    border-radius: 5px;
+    background-color: white;
+    text-align: center;
+    color: #2e7d32;
+    cursor: pointer;
+}
+.adjust-button:hover {
+    background-color: #f1f8e9;
+}
+.record {
+    margin-top: 20px;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.record p {
+    text-align: center;
+    font-style: italic;
+    color: #757575;
+}
+.record canvas {
+    width: 100%;
+    height: 300px;
+    background-color: white;
+}

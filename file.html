@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Greenhouse System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Smart Greenhouse System</h1>
+        <select id="plantSelect">
+            <option value="Lettuce">Lettuce</option>
+            <option value="Cucumbers">Cucumbers</option>
+            <option value="Eggplant">Eggplant</option>
+            <option value="Tomato">Tomato</option>
+            <option value="Peas">Peas</option>
+            <option value="Peppers">Peppers</option>
+        </select>
+        <div class="camera-buttons">
+            <div id="cameraLettuce" class="camera-button">Lettuce Camera</div>
+            <div id="cameraCucumbers" class="camera-button">Cucumbers Camera</div>
+        </div>
+        <div class="camera-buttons">
+            <div id="cameraEggplant" class="camera-button">Eggplant Camera</div>
+            <div id="cameraTomato" class="camera-button">Tomato Camera</div>
+        </div>
+        <div class="camera-buttons">
+            <div id="cameraPeas" class="camera-button">Peas Camera</div>
+            <div id="cameraPeppers" class="camera-button">Peppers Camera</div>
+        </div>
+        
+        <button id="updateButton">Update Environment</button>
+        <div class="status" id="status"></div>
+        <div class="alerts" id="alerts"></div>
+
+        <div class="adjust-buttons">
+            <button class="manual-adjust" id="adjustCO2">Adjust CO2 Level</button>
+            <button class="manual-adjust" id="adjustO2">Adjust O2 Level</button>
+        </div>
+        <div class="adjust-buttons">
+            <button class="manual-adjust" id="adjustTemp">Adjust Temperature</button>
+            <button class="manual-adjust" id="adjustHumidity">Adjust Humidity</button>
+        </div>
+
+        <div class="record">
+            <h3>Real-Time Monitoring (Last 48 hours):</h3>
+            <p>This is just a demo picture.</p>
+            <canvas id="monitoringChart"></canvas>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
