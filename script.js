@@ -7,7 +7,8 @@ const plantSettings = {
     "Peppers": {"temp_range": [20, 25], "humidity_range": [50, 70], "co2_range": [300, 600], "o2_range": [18, 21]}
 };
 
-let monitoringData = []; // To store the last 48 hours of monitoring data
+let monitoringData = [];
+let isAutomatedControl = false;
 
 function getRandomValue(min, max) {
     return Math.random() * (max - min) + min;
@@ -24,12 +25,25 @@ function updateEnvironment() {
     const co2Range = plantSettings[plant].co2_range;
     const o2Range = plantSettings[plant].o2_range;
 
-    let heaterStatus = 'OFF';
-    let coolerStatus = 'OFF';
-    if (temp < tempRange[0]) {
-        heaterStatus = 'ON';
-    } else if (temp > tempRange[1]) {
-        coolerStatus = 'ON';
+    let fanStatus = document.getElementById('fanControl').textContent.includes('ON') ? 'ON' : 'OFF';
+    let lightStatus = document.getElementById('lightControl').textContent.includes('ON') ? 'ON' : 'OFF';
+    let heaterStatus = document.getElementById('heaterControl').textContent.includes('ON') ? 'ON' : 'OFF';
+    let wateringStatus = document.getElementById('wateringControl').textContent.includes('ON') ? 'ON' : 'OFF';
+
+    if (isAutomatedControl) {
+        if (temp < tempRange[0]) {
+            heaterStatus = 'ON';
+        } else if (temp > tempRange[1]) {
+            fanStatus = 'ON';
+        }
+
+        if (humidity < humidityRange[0]) {
+            wateringStatus = 'ON';
+        }
+
+        // Simulating day/night cycle
+        const hour = new Date().getHours();
+        lightStatus = (hour >= 6 && hour < 18) ? 'ON' : 'OFF';
     }
 
     const statusHTML = `
@@ -37,8 +51,10 @@ function updateEnvironment() {
         <p>Humidity: ${humidity.toFixed(1)}% (Ideal: ${humidityRange[0]} - ${humidityRange[1]}%)</p>
         <p>CO2 Level: ${co2.toFixed(1)} ppm (Ideal: ${co2Range[0]} - ${co2Range[1]} ppm)</p>
         <p>O2 Level: ${o2.toFixed(1)}% (Ideal: ${o2Range[0]} - ${o2Range[1]}%)</p>
+        <p>Fan: ${fanStatus}</p>
+        <p>Light: ${lightStatus}</p>
         <p>Heater: ${heaterStatus}</p>
-        <p>Cooler: ${coolerStatus}</p>
+        <p>Watering: ${wateringStatus}</p>
     `;
     document.getElementById('status').innerHTML = statusHTML;
 
@@ -63,14 +79,20 @@ function updateEnvironment() {
         alertsElement.innerHTML = 'No alerts.';
     }
 
-    // Record the current data for the past 48 hours
     const timestamp = new Date().toLocaleString();
     monitoringData.push({ timestamp, temp, humidity, co2, o2 });
     if (monitoringData.length > 48) {
-        monitoringData.shift(); // Keep only the last 48 records
+        monitoringData.shift();
     }
 
     updateMonitoringRecords();
+    
+    if (isAutomatedControl) {
+        document.getElementById('fanControl').textContent = `Fan: ${fanStatus}`;
+        document.getElementById('lightControl').textContent = `Light: ${lightStatus}`;
+        document.getElementById('heaterControl').textContent = `Heater: ${heaterStatus}`;
+        document.getElementById('wateringControl').textContent = `Watering: ${wateringStatus}`;
+    }
 }
 
 function updateMonitoringRecords() {
@@ -81,52 +103,32 @@ function updateMonitoringRecords() {
     });
 }
 
-// Manual adjustments
-function adjustIdealValues(type) {
-    const newValue = parseFloat(prompt(`Enter new ideal value for ${type}:`));
-    if (isNaN(newValue)) {
-        alert('Invalid input. Please enter a number.');
-        return;
-    }
-    const plant = document.getElementById('plantSelect').value;
-    if (type === 'CO2') {
-        const min = plantSettings[plant].co2_range[0];
-        const max = plantSettings[plant].co2_range[1];
-        if (newValue < min || newValue > max) {
-            alert(`Value out of range! Ideal CO2 level should be between ${min} and ${max} ppm.`);
-            return;
-        }
-        plantSettings[plant].co2_range[1] = newValue;
-    } else if (type === 'O2') {
-        const min = plantSettings[plant].o2_range[0];
-        const max = plantSettings[plant].o2_range[1];
-        if (newValue < min || newValue > max) {
-            alert(`Value out of range! Ideal O2 level should be between ${min} and ${max}%.`);
-            return;
-        }
-        plantSettings[plant].o2_range[1] = newValue;
-    } else if (type === 'Temp') {
-        const min = plantSettings[plant].temp_range[0];
-        const max = plantSettings[plant].temp_range[1];
-        if (newValue < min || newValue > max) {
-            alert(`Value out of range! Ideal temperature should be between ${min} and ${max}°C.`);
-            return;
-        }
-        plantSettings[plant].temp_range[1] = newValue;
-    } else if (type === 'Humidity') {
-        const min = plantSettings[plant].humidity_range[0];
-        const max = plantSettings[plant].humidity_range[1];
-        if (newValue < min || newValue > max) {
-            alert(`Value out of range! Ideal humidity should be between ${min} and ${max}%.`);
-            return;
-        }
-        plantSettings[plant].humidity_range[1] = newValue;
+function toggleAutomatedControl() {
+    isAutomatedControl = !isAutomatedControl;
+    const automatedControlButton = document.getElementById('automatedControl');
+    automatedControlButton.textContent = `Automated Control: ${isAutomatedControl ? 'ON' : 'OFF'}`;
+    automatedControlButton.classList.toggle('active', isAutomatedControl);
+    
+    const controlButtons = document.querySelectorAll('.control-button');
+    controlButtons.forEach(button => {
+        button.disabled = isAutomatedControl;
+    });
+}
+
+function toggleControl(controlType) {
+    if (!isAutomatedControl) {
+        const button = document.getElementById(`${controlType}Control`);
+        const isOn = button.textContent.includes('ON');
+        button.textContent = `${controlType.charAt(0).toUpperCase() + controlType.slice(1)}: ${isOn ? 'OFF' : 'ON'}`;
+        button.classList.toggle('active', !isOn);
     }
 }
 
-document.getElementById('updateButton').addEventListener('click', updateEnvironment);
+document.getElementById('automatedControl').addEventListener('click', toggleAutomatedControl);
+document.getElementById('fanControl').addEventListener('click', () => toggleControl('fan'));
+document.getElementById('lightControl').addEventListener('click', () => toggleControl('light'));
+document.getElementById('heaterControl').addEventListener('click', () => toggleControl('heater'));
+document.getElementById('wateringControl').addEventListener('click', () => toggleControl('watering'));
 
-document.getElementById('adjustCO2').addEventListener('click', () => adjustIdealValues('CO2'));
-document.getElementById('adjustO2').addEventListener('click', () => adjustIdealValues('O2'));
-document.getElementById('adjustTemp').addEventListener('click', () => adjustIdealValues('Temp'));
-document.getElementById('adjustHumidity').addEventListener('click', () => adjustIdealValues('Humidity'));
+setInterval(updateEnvironment, 5000); // Update every 5 seconds
+updateEnvironment(); // Initial update
